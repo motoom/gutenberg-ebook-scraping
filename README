@@ -1,0 +1,20 @@
+
+This is a set of python scripts which downloads all 
+Dutch ebooks from Project Gutenberg, renames them to
+human-readabele filenames, formats them so they display well 
+on my ebook reader, and tosses them into subdirectories for 
+easier navigation.
+
+Written by Michiel Overtoom, motoom@xs4all.nl
+
+How to use:
+
+- Run bulkdownload.py to download the raw texts from Project Gutenberg's website.
+- Run gutenberg.py to reformat and rename the raw texts.
+- Run toss.py to distribute them over subdirectories.
+
+After that, upload them to your eBook reader, and enjoy!
+
+I did ;-)
+
+
