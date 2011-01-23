@@ -1,7 +1,8 @@
-
+﻿
 TODO: Use lxml.html instead of regexp to isolate book ids.
 
 TODO: Some etexts seem to not follow the usual pattern.
+
 
 Example 1:
 
@@ -20,6 +21,7 @@ Example 2:
 	Warning: Can't fetch: http://www.gutenberg.org/files/8099/8099-8.txt
 	http://www.gutenberg.org/files/8098/8098-8.txt
 	Warning: Can't fetch: http://www.gutenberg.org/files/8098/8098-8.txt
+
 
 Example 3:
 
