@@ -12,7 +12,7 @@ import os
 
 # To isolate etext book numbers from the index.
 # Index sourec looks like: <li class="pgdbetext"><a href="/etext/17077">Over literatuur</li>
-hrefpat = re.compile("href=\"\/etext\/([0-9]{5})\"")
+hrefpat = re.compile("href=\"\/ebooks\/([0-9]{5})\"")
 
 # Fetch id's of texts.  No need to parse the HTML source, since we only need to grab numbers.
 ids = set()
@@ -20,7 +20,9 @@ f = urllib2.urlopen("http://www.gutenberg.org/browse/languages/nl") # all dutch 
 for line in f:
     m = hrefpat.search(line)
     if m:
-        ids.add(m.group(1)) # 17077
+        bookid=m.group(1) # 17077
+        ids.add(bookid)
+        print "Found ebook id", bookid
 f.close()
 
 # Fetch etexts from locations like http://www.gutenberg.org/files/25257/25257-8.txt
@@ -30,13 +32,24 @@ for id in ids:
         print "Already exists:", ofn
         continue
     url = "http://www.gutenberg.org/files/%s/%s-8.txt" % (id,id)
-    print url
+    print "Fetching",url
     try:
         f = urllib2.urlopen(url)
     except urllib2.HTTPError:
-        print "Warning: Can't fetch:", url
+        print "Can't fetch",url
+        try:
+            # Try without the "-8"
+            url = "http://www.gutenberg.org/files/%s/%s.txt" % (id,id)
+            print "Fetching",url
+            f = urllib2.urlopen(url)
+        except urllib2.HTTPError:
+            print "Error: %s" % url
         continue
-    of = open("%s-8.txt" % id,"wb")
-    of.write(f.read())
-    of.close()
+    contents=f.read()
     f.close()
+    if contents:
+        of = open("%s-8.txt" % id,"wb")
+        of.write(contents)
+        of.close()
+    else:
+        print "Empty:",url
