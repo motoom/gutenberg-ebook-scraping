@@ -4,7 +4,10 @@
 # Reformats and renames the downloaded etexts.
 #
 # Software by Michiel Overtoom, motoom@xs4all.nl, july 2009.
-# 
+#
+
+# <papna> Luyt: You could have title_prefix = "Title: " and do if line.startswith(title_prefix): line = line[len(title_prefix):]
+# <Luyt> papna: Indeed, that'd get rid of that horrible 7.  It has happened to me before that I changed the prefix, and forgot to adjust the length too
 
 import os
 import re
@@ -62,7 +65,7 @@ def beautify(fn):
     ofn = ofn.replace("\"", "'")
     ofn = ofn.replace(":", ";")
     ofn = ofn.replace(",,", ",")
-    
+
     # Report on anomalous situations, but don't make it a showstopper.
     if not title:
         print ofn
@@ -73,7 +76,7 @@ def beautify(fn):
     if not endseen:
         print ofn
         print "    Problem: No '*** END' seen\n"
-        
+
     f = open(ofn, "wt")
     f.write("\n".join(outlines))
     f.close()
