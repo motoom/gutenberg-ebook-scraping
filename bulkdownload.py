@@ -4,7 +4,7 @@
 # Downloads all Dutch etexts from Project Gutenberg's website.
 # Todo: Implement other languages as well.
 #
-# Software by Michiel Overtoom, motoom@xs4all.nl, july 2009.
+# Software by Michiel Overtoom, motoom@xs4all.nl, july 2009, march 2012.
 
 import urllib2
 import re
@@ -29,22 +29,24 @@ f.close()
 for id in ids:
     ofn = "%s-8.txt" % id
     if os.path.isfile(ofn):
-        print "Already exists:", ofn
+        print "Already downloaded:", ofn
         continue
-    url = "http://www.gutenberg.org/files/%s/%s-8.txt" % (id,id)
-    print "Fetching",url
-    try:
-        f = urllib2.urlopen(url)
-    except urllib2.HTTPError:
-        print "Can't fetch",url
+
+    f = None
+    for filemask in ("%s.txt", "%s-8.txt", "%s-0.txt"):
+        fn = filemask % id
+        baseurl = "http://www.gutenberg.org/files/%s" % id
+        url = "%s/%s" % (baseurl, fn)
         try:
-            # Try without the "-8"
-            url = "http://www.gutenberg.org/files/%s/%s.txt" % (id,id)
-            print "Fetching",url
             f = urllib2.urlopen(url)
+            print "Fetching", url
+            break
         except urllib2.HTTPError:
-            print "Error: %s" % url
+            continue
+    if not f:
+        print "Not found:", baseurl
         continue
+
     contents=f.read()
     f.close()
     if contents:
@@ -52,4 +54,4 @@ for id in ids:
         of.write(contents)
         of.close()
     else:
-        print "Empty:",url
+        print "Empty:", url
