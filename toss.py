@@ -1,17 +1,13 @@
 
 # toss.py
 #
-# Software by Michiel Overtoom, motoom@xs4all.nl, july 2009.
+# Software by Michiel Overtoom, motoom@xs4all.nl, July 2009, April 2016.
 #
 # Tosses text files into subdirectories.
-# Ignores raw downloaded files which look like '87231-8.txt'.
 
 import glob
 import os
 import re
-
-# Files to skip:
-skippattern = re.compile("^[0-9]{4,5}\-[0-9]\.txt$")
 
 fns = [] # All filenames to process - all *.txt files in the current directory.
 startlettercount = [0] * 26 # For each letter a..z, the number of files starting with that letter.
@@ -19,8 +15,8 @@ subdircount = 8 # How many subdirectories to create and toss into.
 subdirletters = [[] for x in range(subdircount)] # Of each subdirectory, the letters that will be tossed into.
 
 # Get all the files to process and count them.
-for fn in glob.glob("*.txt"):
-    if skippattern.match(fn): continue
+for fullfn in glob.glob("ebooks/*.txt"):
+    _, fn = fullfn.split(os.sep)
     fns.append(fn)
     startletter = fn[0].lower()
     startletter = min(max(startletter, 'a'), 'z')
@@ -48,6 +44,7 @@ for s in subdirletters:
         subdirname = s[0]
     else:
         subdirname = s[0] + "-" + s[-1]
+    subdirname = os.path.join("ebooks", subdirname)
     if not os.path.isdir(subdirname):
         os.mkdir(subdirname)
     for letter in s:
@@ -56,4 +53,4 @@ for s in subdirletters:
             startletter = fn[0].lower()
             startletter = min(max(startletter, 'a'), 'z')
             if startletter == letter:
-                os.rename(fn, os.path.join(subdirname, fn))
+                os.rename(os.path.join("ebooks", fn), os.path.join(subdirname, fn))
