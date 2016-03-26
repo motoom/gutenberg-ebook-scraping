@@ -20,5 +20,5 @@ from Gutenberg's main web site. This newer version:
 
 - downloads from a mirror instead of scraping from Gutenberg's main web site
 - language can be specified
-- better input encoding detection (TODO)
-- outputs UTF8 encoded text files (TODO)
+- better input encoding detection
+- outputs UTF8 encoded text files
