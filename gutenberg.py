@@ -3,23 +3,39 @@
 #
 # Reformats and renames the downloaded etexts.
 #
-# Software by Michiel Overtoom, motoom@xs4all.nl, july 2009.
+# Software by Michiel Overtoom, motoom@xs4all.nl, July 2009, amended April 2016.
 #
-
-# <papna> Luyt: You could have title_prefix = "Title: " and do if line.startswith(title_prefix): line = line[len(title_prefix):]
-# <Luyt> papna: Indeed, that'd get rid of that horrible 7.  It has happened to me before that I changed the prefix, and forgot to adjust the length too
 
 import os
 import re
+import codecs
+import glob
 
-# Repetive stuff I don't want to read a 1000 times on my eBook reader.
+# Repetitive stuff I don't want to read a 1000 times on my eBook reader.
 remove = ["Produced by","End of the Project Gutenberg","End of Project Gutenberg"]
 
-def beautify(fn):
+
+def encoding(fn):
+    for line in open(fn):
+        if line.startswith("Character set encoding:"):
+            _, encoding = line.split(":")
+            return encoding.strip()
+    return "latin1"
+
+codecmap = {
+    "latin1": "latin1",
+    "ISO Latin-1": "latin1",
+    "ISO-8859-1": "latin1",
+    "UTF-8": "utf8",
+    "ASCII": "ascii",
+    }
+
+def beautify(fn, outputdir):
     ''' Reads a raw Project Gutenberg etext, reformat paragraphs,
     and removes fluff.  Determines the title of the book and uses it
     as a filename to write the resulting output text. '''
-    lines = [line.strip() for line in open(fn)]
+    codec = codecmap.get(encoding(fn), "latin1")
+    lines = [line.strip() for line in codecs.open(fn, "r", codec)]
     collect = False
     lookforsubtitle = False
     outlines = []
@@ -37,7 +53,7 @@ def beautify(fn):
                 subtitle = line.strip()
                 subtitle = subtitle.strip(".")
                 title += ", " + subtitle
-        if ("*** START" in line) or ("***START" in line):
+        if ("*** START" in line) or ("***START" in line) or (line.startswith("*END THE SMALL PRINT!")):
             collect = startseen = True
             paragraph = ""
             continue
@@ -59,7 +75,11 @@ def beautify(fn):
             paragraph += " " + line
 
     # Compose a filename.  Replace some illegal file name characters with alternatives.
-    ofn = title[:150] + ", " + fn
+    lastpart = fn
+    parts = fn.split(os.sep)
+    if len(parts):
+        lastpart = parts[-1]
+    ofn = title[:150] + ", " + lastpart
     ofn = ofn.replace("&", "en")
     ofn = ofn.replace("/", "-")
     ofn = ofn.replace("\"", "'")
@@ -77,11 +97,12 @@ def beautify(fn):
         print ofn
         print "    Problem: No '*** END' seen\n"
 
-    f = open(ofn, "wt")
+    f = codecs.open(os.path.join(outputdir, ofn), "w", "utf8")
     f.write("\n".join(outlines))
     f.close()
 
-sourcepattern = re.compile("^[0-9]{4,5}\-[0-9]\.txt$")
-for fn in os.listdir("."):
-    if sourcepattern.match(fn):
-        beautify(fn)
+if not os.path.exists("ebooks"):
+    os.mkdir("ebooks")
+
+for fn in glob.glob("ebooks-unzipped/*.txt"):
+    beautify(fn, "ebooks")
