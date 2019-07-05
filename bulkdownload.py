@@ -80,17 +80,17 @@ def older(a, b):
 def fetch(mirrorurl, filename, outputfilename):
     '''Fetch a file from a gutenberg mirror, if it hasn't been fetched earlier today.'''
     mustdownload = False
-    if os.path.exists(filename):
-        st = os.stat(filename)
+    if os.path.exists(outputfilename):
+        st = os.stat(outputfilename)
         modified = datetime.date.fromtimestamp(st.st_mtime)
         today = datetime.date.today()
         if modified == today:
-            print "%s exists, and is up-to-date. No need to download it." % filename
+            print "%s exists, and is up-to-date. No need to download it." % outputfilename
         else:
-            print "%d exists, but is out of date. Downloading..." % filename
+            print "%d exists, but is out of date. Downloading..." % outputfilename
             mustdownload = True
     else:
-        print "%s not found, downloading..." % filename
+        print "%s not found, downloading..." % outputfilename
         mustdownload = True
 
     if mustdownload:
@@ -114,6 +114,8 @@ fetch(MIRROR, "GUTINDEX.zip", "indexes/GUTINDEX.zip")
 if not os.path.exists("indexes/GUTINDEX.ALL") or older("indexes/GUTINDEX.ALL", "indexes/GUTINDEX.zip"):
     print "Extracting GUTINDEX.ALL from GUTINDEX.zip..."
     zipfile.ZipFile("indexes/GUTINDEX.zip").extractall("indexes/")
+else:
+    print "No need to extract GUTINDEX.ALL"
 
 
 # Download the file index, and gunzip it.
@@ -125,6 +127,8 @@ if not os.path.exists("indexes/ls-lR") or older("indexes/ls-lR", "indexes/ls-lR.
     outf.write(inf.read())
     inf.close()
     outf.close()
+else:
+    print "No need to extract ls-lR"
 
 
 # Parse the file index
@@ -212,7 +216,7 @@ for nr, title in ebooks.iteritems():
     if not nr in ebookslanguage:
         ebookslanguage[nr] = "English"
 
-if 0:
+if 1:
     # Print report of found eBooks.
     nr = 0
     for ebookno in sorted(ebooks.keys()):
