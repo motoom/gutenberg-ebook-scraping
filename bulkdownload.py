@@ -178,7 +178,7 @@ for line in codecs.open("indexes/GUTINDEX.ALL", encoding="utf8"):
     line = line.replace(u"\xA0", u" ") # Convert non-breaking spaces to ordinary spaces.
 
     if inpreamble: # Skip the explanation at the start of the file.
-        if "TITLE and AUTHOR" in line and "ETEXT NO." in line:
+        if "TITLE and AUTHOR" in line:
             inpreamble = False
         else:
             continue
